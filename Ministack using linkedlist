@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+typedef struct Node {
+    int data;
+    int min;
+    struct Node* next;
+} Node;
+
+
+typedef struct MinStack {
+    Node* top;
+} MinStack;
+
+Node* createNode(int data, int min) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->min = min;
+    newNode->next = NULL;
+    return newNode;
+}
+
+MinStack* createMinStack() {
+    MinStack* stack = (MinStack*)malloc(sizeof(MinStack));
+    stack->top = NULL;
+    return stack;
+}
+
+void push(MinStack* stack, int value) {
+    int min = (stack->top == NULL) ? value : (value < stack->top->min ? value : stack->top->min);
+    Node* newNode = createNode(value, min);
+    newNode->next = stack->top;
+    stack->top = newNode;
+}
+
+void pop(MinStack* stack) {
+    if (stack->top == NULL) {
+        printf("Stack underflow\n");
+        return;
+    }
+    Node* temp = stack->top;
+    stack->top = stack->top->next;
+    free(temp);
+}
+
+int top(MinStack* stack) {
+    if (stack->top == NULL) {
+        printf("Stack is empty\n");
+        return INT_MIN;
+    }
+    return stack->top->data;
+}
+
+int getMin(MinStack* stack) {
+    if (stack->top == NULL) {
+        printf("Stack is empty\n");
+        return INT_MIN;
+    }
+    return stack->top->min;
+}
+
+void freeMinStack(MinStack* stack) {
+    while (stack->top != NULL) {
+        pop(stack);
+    }
+    free(stack);
+}
+
+int main() {
+    MinStack* stack = createMinStack();
+    
+    push(stack, 10);
+    push(stack, 20);
+    push(stack, 5);
+    push(stack, 15);
+
+    printf("Top: %d\n", top(stack));
+    printf("Minimum: %d\n", getMin(stack));
+
+    pop(stack);
+    printf("After popping:\n");
+    printf("Top: %d\n", top(stack));
+    printf("Minimum: %d\n", getMin(stack));
+
+    freeMinStack(stack);
+    return 0;
+}
